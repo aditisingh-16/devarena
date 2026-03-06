@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevArena 🚀</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f0f1a;
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        nav {
+            background: #1a1a2e;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #6c63ff;
+        }
+
+        nav h1 { color: #6c63ff; font-size: 24px; }
+        nav span { color: #aaa; font-size: 14px; }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: #1a1a2e;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            border: 1px solid #2a2a4a;
+        }
+
+        .card h2 {
+            color: #6c63ff;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            background: #0f0f1a;
+            border: 1px solid #2a2a4a;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        button {
+            background: #6c63ff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        button:hover { background: #5a52d5; }
+
+        .result {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            background: #0f0f1a;
+            border: 1px solid #2a2a4a;
+            display: none;
+        }
+
+        .code-block {
+            background: #0d1117;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: monospace;
+            font-size: 14px;
+            color: #f0f6fc;
+            margin: 15px 0;
+            border-left: 4px solid #ff6b6b;
+            white-space: pre-wrap;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #1a1a2e;
+            border: 1px solid #2a2a4a;
+            color: #aaa;
+        }
+
+        .tab.active {
+            background: #6c63ff;
+            color: white;
+            border-color: #6c63ff;
+        }
+
+        .section { display: none; }
+        .section.active { display: block; }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin: 4px;
+        }
+
+        .easy { background: #1a472a; color: #69db7c; }
+        .medium { background: #7c4d00; color: #ffd43b; }
+        .hard { background: #4a1515; color: #ff6b6b; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h1>⚔️ DevArena</h1>
+    <span id="welcomeMsg">Welcome, Developer!</span>
+</nav>
+
+<div class="container">
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <div class="tab active" onclick="showSection('login')">🔑 Login</div>
+        <div class="tab" onclick="showSection('register')">📝 Register</div>
+        <div class="tab" onclick="showSection('bughunter')">🐛 Bug Hunter</div>
+    </div>
+
+    <!-- Login Section -->
+    <div class="section active" id="login">
+        <div class="card">
+            <h2>🔑 Login</h2>
+            <input type="text" id="loginUsername" placeholder="Username" />
+            <input type="password" id="loginPassword" placeholder="Password" />
+            <button onclick="login()">Login</button>
+            <div class="result" id="loginResult"></div>
+        </div>
+    </div>
+
+    <!-- Register Section -->
+    <div class="section" id="register">
+        <div class="card">
+            <h2>📝 Register</h2>
+            <input type="text" id="regUsername" placeholder="Username" />
+            <input type="email" id="regEmail" placeholder="Email" />
+            <input type="password" id="regPassword" placeholder="Password" />
+            <button onclick="register()">Register</button>
+            <div class="result" id="registerResult"></div>
+        </div>
+    </div>
+
+    <!-- Bug Hunter Section -->
+    <div class="section" id="bughunter">
+        <div class="card">
+            <h2>🐛 Bug Hunter</h2>
+            <p style="color:#aaa; margin-bottom:15px;">Find the bug in the code below!</p>
+            <button onclick="loadProblem()">🎲 Load Random Problem</button>
+
+            <div id="problemArea" style="display:none">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h3 id="problemTitle" style="color:#fff; margin:15px 0 5px;"></h3>
+                    <div>
+                        <span class="badge" id="difficultyBadge"></span>
+                        <span class="badge" style="background:#1a2a4a; color:#74c0fc" id="categoryBadge"></span>
+                    </div>
+                </div>
+                <div class="code-block" id="buggyCodeDisplay"></div>
+                <input type="text" id="userAnswer" placeholder="Describe the bug you found..." />
+                <button onclick="submitAnswer()">✅ Submit Answer</button>
+                <button onclick="getHint()" style="background:#2a2a4a;">💡 Get Hint</button>
+                <div class="result" id="answerResult"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let currentProblemId = null;
+
+    function showSection(name) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(name).classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    async function login() {
+        const username = document.getElementById('loginUsername').value;
+        const password = document.getElementById('loginPassword').value;
+        const res = await fetch(`/api/users/login?username=${username}&password=${password}`, { method: 'POST' });
+        const text = await res.text();
+        showResult('loginResult', text);
+        if (text.includes('successful')) {
+            document.getElementById('welcomeMsg').textContent = `Welcome, ${username}! 🎉`;
+        }
+    }
+
+    async function register() {
+        const username = document.getElementById('regUsername').value;
+        const email = document.getElementById('regEmail').value;
+        const password = document.getElementById('regPassword').value;
+        const res = await fetch(`/api/users/register?username=${username}&email=${email}&password=${password}`, { method: 'POST' });
+        const text = await res.text();
+        showResult('registerResult', text);
+    }
+
+    async function loadProblem() {
+        const res = await fetch('/api/problems/all');
+        const problems = await res.json();
+        if (problems.length === 0) {
+            alert('No problems found!');
+            return;
+        }
+        const problem = problems[Math.floor(Math.random() * problems.length)];
+        currentProblemId = problem.id;
+        document.getElementById('problemTitle').textContent = problem.title;
+        document.getElementById('buggyCodeDisplay').textContent = problem.buggyCode;
+        document.getElementById('difficultyBadge').textContent = problem.difficulty;
+        document.getElementById('difficultyBadge').className = 'badge ' + problem.difficulty.toLowerCase();
+        document.getElementById('categoryBadge').textContent = problem.category;
+        document.getElementById('problemArea').style.display = 'block';
+        document.getElementById('answerResult').style.display = 'none';
+    }
+
+    async function submitAnswer() {
+        const answer = document.getElementById('userAnswer').value;
+        const res = await fetch(`/api/problems/check?problemId=${currentProblemId}&userAnswer=${answer}`, { method: 'POST' });
+        const text = await res.text();
+        showResult('answerResult', text);
+    }
+
+    async function getHint() {
+        const res = await fetch(`/api/problems/${currentProblemId}`);
+        const problem = await res.json();
+        showResult('answerResult', '💡 Hint: ' + problem.hint);
+    }
+
+    function showResult(id, text) {
+        const el = document.getElementById(id);
+        el.textContent = text;
+        el.style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
