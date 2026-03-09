@@ -32,4 +32,17 @@ public class UserController {
     public Object getAllUsers() {
         return userService.getAllUsers();
     }
+
+    @PostMapping("/score")
+    public String addScore(
+        @RequestParam String username,
+        @RequestParam int points
+    ) {
+        return userService.addScore(username, points);
+    }
+
+    @GetMapping("/profile/{username}")
+    public Object getUserProfile(@PathVariable String username) {
+        return userService.getUserProfile(username);
+    }
 }

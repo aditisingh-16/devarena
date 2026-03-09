@@ -196,6 +196,7 @@
 
 <script>
     let currentProblemId = null;
+    let loggedInUser = '';
 
     function showSection(name) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -212,6 +213,7 @@
         showResult('loginResult', text);
         if (text.includes('successful')) {
             document.getElementById('welcomeMsg').textContent = `Welcome, ${username}! 🎉`;
+            loggedInUser = username;
         }
     }
 
@@ -243,10 +245,10 @@
     }
 
     async function submitAnswer() {
-        const answer = document.getElementById('userAnswer').value;
-        const res = await fetch(`/api/problems/check?problemId=${currentProblemId}&userAnswer=${answer}`, { method: 'POST' });
-        const text = await res.text();
-        showResult('answerResult', text);
+    const answer = document.getElementById('userAnswer').value;
+    const res = await fetch(`/api/problems/check?problemId=${currentProblemId}&userAnswer=${encodeURIComponent(answer)}&username=${loggedInUser}`, { method: 'POST' });
+    const text = await res.text();
+    showResult('answerResult', text);
     }
 
     async function getHint() {

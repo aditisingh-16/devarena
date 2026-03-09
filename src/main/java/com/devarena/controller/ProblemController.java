@@ -42,9 +42,10 @@ public class ProblemController {
 
     @PostMapping("/check")
     public String checkAnswer(
-        @RequestParam Long problemId,
-        @RequestParam String userAnswer
+    @RequestParam Long problemId,
+    @RequestParam String userAnswer,
+    @RequestParam(required = false) String username
     ) {
-        return problemService.checkAnswer(problemId, userAnswer);
+        return problemService.checkAnswer(problemId, userAnswer, username);
     }
 }

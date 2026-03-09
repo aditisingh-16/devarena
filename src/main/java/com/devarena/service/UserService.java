@@ -18,12 +18,10 @@ public class UserService {
         if (userRepository.existsByEmail(email)) {
             return "Email already registered!";
         }
-
         User user = new User();
         user.setUsername(username);
         user.setEmail(email);
         user.setPassword(password);
-
         userRepository.save(user);
         return "User registered successfully!";
     }
@@ -39,7 +37,37 @@ public class UserService {
             })
             .orElse("User not found!");
     }
+
     public Object getAllUsers() {
-         return userRepository.findAll();
+        return userRepository.findAll();
+    }
+
+    public String addScore(String username, int points) {
+        return userRepository.findByUsername(username)
+            .map(user -> {
+                int newScore = user.getScore() + points;
+                user.setScore(newScore);
+                user.setBadge(calculateBadge(newScore));
+                userRepository.save(user);
+                return "Score updated! New score: " + newScore + " | Badge: " + user.getBadge();
+            })
+            .orElse("User not found!");
+    }
+
+    public Object getUserProfile(String username) {
+        return userRepository.findByUsername(username)
+            .map(user -> {
+                return "Username: " + user.getUsername() +
+                       " | Score: " + user.getScore() +
+                       " | Badge: " + user.getBadge();
+            })
+            .orElse("User not found!");
+    }
+
+    private String calculateBadge(int score) {
+        if (score >= 200) return "Elite Hacker 👑";
+        if (score >= 101) return "Pro Coder 🔥";
+        if (score >= 51) return "Developer 💻";
+        return "Beginner 🌱";
     }
 }
