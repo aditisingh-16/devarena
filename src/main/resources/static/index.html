@@ -143,6 +143,7 @@
         <div class="tab active" onclick="showSection('login')">🔑 Login</div>
         <div class="tab" onclick="showSection('register')">📝 Register</div>
         <div class="tab" onclick="showSection('bughunter')">🐛 Bug Hunter</div>
+        <div class="tab" onclick="showSection('portfolio')">💼 Portfolio Roaster</div>
     </div>
 
     <!-- Login Section -->
@@ -192,6 +193,28 @@
         </div>
     </div>
 
+</div>
+<!-- Portfolio Roaster Section -->
+<div class="section" id="portfolio">
+    <div class="card">
+        <h2>💼 Portfolio Roaster</h2>
+        <p style="color:#aaa; margin-bottom:15px;">Enter your GitHub username and get brutally honest feedback!</p>
+        <input type="text" id="githubUsername" placeholder="Your GitHub username..." />
+        <button onclick="analyzePortfolio()">🔥 Roast My Portfolio</button>
+        <div id="portfolioResult" style="display:none">
+            <div style="text-align:center; margin:20px 0">
+                <img id="avatarImg" src="" style="width:80px; height:80px; border-radius:50%; border:3px solid #6c63ff"/>
+                <h3 id="profileName" style="margin:10px 0; color:#fff"></h3>
+                <div style="font-size:36px; font-weight:bold; color:#6c63ff" id="scoreDisplay"></div>
+                <div style="color:#aaa">out of 100</div>
+            </div>
+            <div id="roastsList"></div>
+            <div style="margin-top:15px">
+                <h4 style="color:#69db7c; margin-bottom:10px">✅ How to improve:</h4>
+                <div id="suggestionsList"></div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -256,7 +279,43 @@
         const problem = await res.json();
         showResult('answerResult', '💡 Hint: ' + problem.hint);
     }
-
+        async function analyzePortfolio() {
+        const username = document.getElementById('githubUsername').value;
+    if (!username) { alert('Enter a GitHub username!'); return; }
+    
+    const btn = document.querySelector('#portfolio button');
+    btn.textContent = '⏳ Analyzing...';
+    
+    const res = await fetch(`/api/portfolio/analyze/${username}`);
+    const data = await res.json();
+    
+    btn.textContent = '🔥 Roast My Portfolio';
+    
+    if (data.error) {
+        alert(data.error);
+        return;
+        }
+    
+        document.getElementById('avatarImg').src = data.avatar_url;
+         document.getElementById('profileName').textContent = data.name || username;
+        document.getElementById('scoreDisplay').textContent = data.score;
+    
+         // Roasts
+        const roastsList = document.getElementById('roastsList');
+        roastsList.innerHTML = '<h4 style="color:#ff6b6b; margin-bottom:10px">🔥 Roasts:</h4>';
+        data.roasts.forEach(roast => {
+            roastsList.innerHTML += `<div style="background:#1a0a0a; border:1px solid #ff6b6b; border-radius:8px; padding:10px; margin-bottom:8px; color:#ff6b6b">${roast}</div>`;
+        });
+    
+        // Suggestions
+        const suggestionsList = document.getElementById('suggestionsList');
+        suggestionsList.innerHTML = '';
+         data.suggestions.forEach(s => {
+            suggestionsList.innerHTML += `<div style="background:#0a1a0a; border:1px solid #69db7c; border-radius:8px; padding:10px; margin-bottom:8px; color:#69db7c">✅ ${s}</div>`;
+        });
+    
+        document.getElementById('portfolioResult').style.display = 'block';
+    }
     function showResult(id, text) {
         const el = document.getElementById(id);
         el.textContent = text;
