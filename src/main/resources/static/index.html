@@ -144,6 +144,7 @@
         <div class="tab" onclick="showSection('register')">📝 Register</div>
         <div class="tab" onclick="showSection('bughunter')">🐛 Bug Hunter</div>
         <div class="tab" onclick="showSection('portfolio')">💼 Portfolio Roaster</div>
+        <div class="tab" onclick="showSection('codeRisk')">🔮 Code Risk Analyzer</div>
     </div>
 
     <!-- Login Section -->
@@ -214,6 +215,23 @@
                 <div id="suggestionsList"></div>
             </div>
         </div>
+    </div>
+</div>
+<!-- Code Risk Analyzer Section -->
+<div class="section" id="codeRisk">
+    <div class="card">
+        <h2>🔮 Code Risk Analyzer</h2>
+        <p style="color:#aaa; margin-bottom:15px;">Paste your code and AI will predict which edge cases will fail!</p>
+        <select id="codeLanguage" style="width:100%; padding:10px; margin-bottom:10px; background:#1e1e2e; color:white; border:1px solid #444; border-radius:8px;">
+            <option value="java">Java</option>
+            <option value="python">Python</option>
+            <option value="javascript">JavaScript</option>
+            <option value="c++">C++</option>
+            <option value="c">C</option>
+        </select>
+        <textarea id="codeInput" placeholder="Paste your code here..." style="width:100%; height:200px; padding:10px; background:#1e1e2e; color:white; border:1px solid #444; border-radius:8px; font-family:monospace;"></textarea>
+        <button onclick="analyzeCodeRisk()">🔮 Analyze Risks</button>
+        <div id="codeRiskResult" style="display:none; margin-top:15px;"></div>
     </div>
 </div>
 
@@ -316,6 +334,34 @@
     
         document.getElementById('portfolioResult').style.display = 'block';
     }
+    async function analyzeCodeRisk() {
+    const code = document.getElementById('codeInput').value;
+    const language = document.getElementById('codeLanguage').value;
+    
+    if (!code) { alert('Please paste some code first!'); return; }
+    
+    const btn = document.querySelector('#codeRisk button');
+    btn.textContent = '⏳ Analyzing...';
+    btn.disabled = true;
+
+    const res = await fetch(`/api/coderisk/analyze?code=${encodeURIComponent(code)}&language=${language}`, {
+    method: 'POST'
+        });
+    const data = await res.json();
+    
+    const resultDiv = document.getElementById('codeRiskResult');
+    resultDiv.style.display = 'block';
+    
+    // Extract text from Claude API response
+    const text = data.candidates[0].content.parts[0].text;
+    resultDiv.innerHTML = `<div style="background:#1e1e2e; padding:15px; border-radius:8px; border-left:4px solid #f59e0b;">
+        <h3 style="color:#f59e0b;">⚠️ Risk Analysis:</h3>
+        <pre style="color:#e2e8f0; white-space:pre-wrap;">${text}</pre>
+    </div>`;
+    
+    btn.textContent = '🔮 Analyze Risks';
+    btn.disabled = false;
+}
     function showResult(id, text) {
         const el = document.getElementById(id);
         el.textContent = text;
