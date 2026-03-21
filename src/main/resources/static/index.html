@@ -145,6 +145,7 @@
         <div class="tab" onclick="showSection('bughunter')">🐛 Bug Hunter</div>
         <div class="tab" onclick="showSection('portfolio')">💼 Portfolio Roaster</div>
         <div class="tab" onclick="showSection('codeRisk')">🔮 Code Risk Analyzer</div>
+        <div class="tab" onclick="showSection('codebattle')">⚔️ Code Battle</div>
     </div>
 
     <!-- Login Section -->
@@ -232,6 +233,29 @@
         <textarea id="codeInput" placeholder="Paste your code here..." style="width:100%; height:200px; padding:10px; background:#1e1e2e; color:white; border:1px solid #444; border-radius:8px; font-family:monospace;"></textarea>
         <button onclick="analyzeCodeRisk()">🔮 Analyze Risks</button>
         <div id="codeRiskResult" style="display:none; margin-top:15px;"></div>
+    </div>
+</div>
+<!-- Code Battle Section -->
+<div class="section" id="codebattle">
+    <div class="card">
+        <h2>⚔️ Code Battle</h2>
+        <p style="color:#aaa; margin-bottom:15px;">Challenge another developer to a real-time coding battle!</p>
+        
+        <div id="battleLobby">
+            <button onclick="joinBattle()">⚔️ Join Battle</button>
+            <div id="battleStatus" style="margin-top:15px; color:#aaa;"></div>
+        </div>
+
+        <div id="battleArena" style="display:none;">
+            <div style="background:#1e1e2e; padding:15px; border-radius:8px; margin-bottom:15px;">
+                <h3 id="problemTitle" style="color:#7c3aed;"></h3>
+                <p id="problemDescription" style="color:#e2e8f0;"></p>
+            </div>
+            <textarea id="battleCode" placeholder="Write your solution here..." 
+                style="width:100%; height:200px; padding:10px; background:#1e1e2e; color:white; border:1px solid #444; border-radius:8px; font-family:monospace;"></textarea>
+            <button onclick="submitBattle()" style="background:#10b981;">✅ Submit Solution</button>
+            <div id="battleResult" style="margin-top:15px;"></div>
+        </div>
     </div>
 </div>
 
@@ -361,6 +385,66 @@
     
     btn.textContent = '🔮 Analyze Risks';
     btn.disabled = false;
+}
+    let currentBattleId = null;
+let battlePolling = null;
+
+async function joinBattle() {
+    if (!loggedInUser) { alert('Please login first!'); return; }
+    
+    const btn = document.querySelector('#battleLobby button');
+    btn.textContent = '⏳ Finding opponent...';
+    btn.disabled = true;
+
+    const res = await fetch(`/api/battle/join?username=${loggedInUser}`, { method: 'POST' });
+    const battle = await res.json();
+    currentBattleId = battle.id;
+
+    if (battle.status === 'WAITING') {
+        document.getElementById('battleStatus').innerHTML = '⏳ Waiting for opponent to join...';
+        // Poll every 2 seconds to check if opponent joined
+        battlePolling = setInterval(async () => {
+            const res = await fetch(`/api/battle/status/${currentBattleId}`);
+            const updated = await res.json();
+            if (updated.status === 'ACTIVE') {
+                clearInterval(battlePolling);
+                startBattle(updated);
+            }
+        }, 2000);
+    } else if (battle.status === 'ACTIVE') {
+        startBattle(battle);
+    }
+}
+
+function startBattle(battle) {
+    document.getElementById('battleLobby').style.display = 'none';
+    document.getElementById('battleArena').style.display = 'block';
+    document.getElementById('problemTitle').textContent = battle.problemTitle;
+    document.getElementById('problemDescription').textContent = battle.problemDescription;
+
+    // Poll for winner
+    battlePolling = setInterval(async () => {
+        const res = await fetch(`/api/battle/status/${currentBattleId}`);
+        const updated = await res.json();
+        if (updated.status === 'FINISHED') {
+            clearInterval(battlePolling);
+            const resultDiv = document.getElementById('battleResult');
+            if (updated.winner === loggedInUser) {
+                resultDiv.innerHTML = '<h3 style="color:#10b981;">🏆 You Won!</h3>';
+            } else {
+                resultDiv.innerHTML = `<h3 style="color:#ef4444;">😔 ${updated.winner} won this round!</h3>`;
+            }
+        }
+    }, 2000);
+}
+
+async function submitBattle() {
+    if (!currentBattleId) return;
+    const res = await fetch(`/api/battle/submit/${currentBattleId}?username=${loggedInUser}`, { method: 'POST' });
+    const battle = await res.json();
+    if (battle.winner === loggedInUser) {
+        document.getElementById('battleResult').innerHTML = '<h3 style="color:#10b981;">🏆 You Won!</h3>';
+    }
 }
     function showResult(id, text) {
         const el = document.getElementById(id);
