@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevArena - Portfolio Roaster</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #080c14;
+            --card: rgba(255,255,255,0.03);
+            --border: rgba(255,140,0,0.2);
+            --orange: #ff8c00;
+            --cyan: #00d4ff;
+            --green: #00ff88;
+            --red: #ff4466;
+            --text: #e2e8f0;
+            --muted: #4a5568;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; min-height: 100vh; }
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background-image: linear-gradient(rgba(255,140,0,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,140,0,0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+        }
+        .orb { position: fixed; border-radius: 50%; filter: blur(100px); opacity: 0.08; pointer-events: none; }
+        .orb1 { width: 400px; height: 400px; background: var(--orange); top: -100px; right: -100px; }
+        .orb2 { width: 300px; height: 300px; background: var(--cyan); bottom: -100px; left: -100px; }
+
+        .navbar { position: relative; z-index: 10; background: rgba(8,12,20,0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 16px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'Orbitron', sans-serif; font-size: 1.4rem; font-weight: 900; letter-spacing: 3px; background: linear-gradient(135deg, var(--cyan), var(--green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; cursor: pointer; }
+        .back-btn { padding: 7px 16px; background: transparent; border: 1px solid var(--border); color: var(--orange); border-radius: 6px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 0.65rem; letter-spacing: 2px; transition: all 0.3s; }
+        .back-btn:hover { background: var(--orange); color: #000; }
+
+        .container { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 50px 20px; }
+        .page-header { margin-bottom: 36px; }
+        .page-tag { font-size: 0.65rem; letter-spacing: 4px; color: var(--orange); text-transform: uppercase; margin-bottom: 10px; }
+        .page-title { font-family: 'Orbitron', sans-serif; font-size: 2rem; font-weight: 900; }
+        .page-sub { color: var(--muted); font-size: 0.8rem; margin-top: 8px; }
+
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; backdrop-filter: blur(10px); margin-bottom: 24px; }
+        .input-label { font-size: 0.65rem; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; display: block; }
+        input { width: 100%; padding: 12px 16px; background: rgba(255,140,0,0.03); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; outline: none; transition: all 0.3s; margin-bottom: 16px; }
+        input:focus { border-color: var(--orange); box-shadow: 0 0 0 3px rgba(255,140,0,0.1); }
+        input::placeholder { color: var(--muted); }
+        .btn { width: 100%; padding: 13px; background: linear-gradient(135deg, var(--orange), #cc5500); border: none; border-radius: 8px; color: #000; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; font-weight: 700; letter-spacing: 3px; cursor: pointer; transition: all 0.3s; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255,140,0,0.3); }
+
+        .result-card { display: none; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .profile-header { display: flex; align-items: center; gap: 24px; margin-bottom: 30px; padding-bottom: 30px; border-bottom: 1px solid var(--border); }
+        .avatar { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--orange); }
+        .profile-name { font-family: 'Orbitron', sans-serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 6px; }
+        .score-display { font-family: 'Orbitron', sans-serif; font-size: 3rem; font-weight: 900; color: var(--orange); line-height: 1; }
+        .score-label { font-size: 0.65rem; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; }
+
+        .section-title { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 14px; }
+        .roast-item { background: rgba(255,68,102,0.06); border: 1px solid rgba(255,68,102,0.2); color: #ff8899; padding: 12px 16px; border-radius: 8px; margin-bottom: 10px; font-size: 0.82rem; line-height: 1.6; }
+        .improve-item { background: rgba(0,255,136,0.06); border: 1px solid rgba(0,255,136,0.2); color: var(--green); padding: 12px 16px; border-radius: 8px; margin-bottom: 10px; font-size: 0.82rem; line-height: 1.6; }
+    </style>
+</head>
+<body>
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+
+    <nav class="navbar">
+        <div class="logo" onclick="window.location.href='/dashboard.html'">DEVARENA</div>
+        <button class="back-btn" onclick="window.location.href='/dashboard.html'">← BACK</button>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <div class="page-tag">// Module 02</div>
+            <div class="page-title">💼 PORTFOLIO ROASTER</div>
+            <div class="page-sub">Brutally honest AI feedback on your GitHub profile.</div>
+        </div>
+
+        <div class="card">
+            <label class="input-label">GitHub Username</label>
+            <input type="text" id="githubUsername" placeholder="enter your github username..." />
+            <button class="btn" onclick="analyzePortfolio()">🔥 ROAST MY PORTFOLIO</button>
+        </div>
+
+        <div class="card result-card" id="resultCard">
+            <div class="profile-header">
+                <img id="avatarImg" class="avatar" src="" alt="avatar" />
+                <div>
+                    <div class="profile-name" id="profileName"></div>
+                    <div class="score-display" id="scoreDisplay"></div>
+                    <div class="score-label">out of 100</div>
+                </div>
+            </div>
+            <div class="section-title" style="color: var(--red);">🔥 Roasts</div>
+            <div id="roastsList"></div>
+            <div class="section-title" style="color: var(--green); margin-top: 24px;">✅ How to Improve</div>
+            <div id="improveList"></div>
+        </div>
+    </div>
+
+    <script>
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        if (!loggedInUser) window.location.href = '/index.html';
+
+        async function analyzePortfolio() {
+            const username = document.getElementById('githubUsername').value;
+            if (!username) { alert('Enter a GitHub username!'); return; }
+            const btn = document.querySelector('.btn');
+            btn.textContent = '⏳ ANALYZING...';
+            btn.disabled = true;
+            const res = await fetch(`/api/portfolio/analyze/${username}`);
+            const data = await res.json();
+            document.getElementById('avatarImg').src = data.avatarUrl || '';
+            document.getElementById('profileName').textContent = data.name || username;
+            document.getElementById('scoreDisplay').textContent = data.score;
+            const roastsList = document.getElementById('roastsList');
+            roastsList.innerHTML = '';
+            (data.roasts || []).forEach(r => { roastsList.innerHTML += `<div class="roast-item">🔥 ${r}</div>`; });
+            const improveList = document.getElementById('improveList');
+            improveList.innerHTML = '';
+            (data.suggestions || []).forEach(i => { improveList.innerHTML += `<div class="improve-item">✅ ${i}</div>`; });
+            document.getElementById('resultCard').style.display = 'block';
+            btn.textContent = '🔥 ROAST MY PORTFOLIO';
+            btn.disabled = false;
+        }
+    </script>
+</body>
+</html>

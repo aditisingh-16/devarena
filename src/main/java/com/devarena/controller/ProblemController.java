@@ -48,4 +48,13 @@ public class ProblemController {
     ) {
         return problemService.checkAnswer(problemId, userAnswer, username);
     }
+    @GetMapping("/random")
+    public Object getRandomProblem(@RequestParam(required = false) String username) {
+    List<Problem> problems = problemService.getAllProblems();
+    if (problems.isEmpty()) {
+        return new java.util.HashMap<String, String>() {{ put("error", "No problems found"); }};
+    }
+    int idx = (int)(Math.random() * problems.size());
+    return problems.get(idx);
+}
 }

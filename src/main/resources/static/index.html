@@ -3,455 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DevArena 🚀</title>
+    <title>DevArena ⚔️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg: #080c14;
+            --card: rgba(255,255,255,0.03);
+            --border: rgba(0,212,255,0.2);
+            --cyan: #00d4ff;
+            --green: #00ff88;
+            --red: #ff4466;
+            --text: #e2e8f0;
+            --muted: #4a5568;
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #0f0f1a;
-            color: #fff;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'JetBrains Mono', monospace;
             min-height: 100vh;
-        }
-
-        nav {
-            background: #1a1a2e;
-            padding: 15px 30px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid #6c63ff;
+            justify-content: center;
+            overflow: hidden;
         }
-
-        nav h1 { color: #6c63ff; font-size: 24px; }
-        nav span { color: #aaa; font-size: 14px; }
-
-        .container {
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 0 20px;
+        /* Animated grid background */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
         }
+        @keyframes gridMove { 0% { transform: translateY(0); } 100% { transform: translateY(50px); } }
+
+        /* Glow orbs */
+        .orb { position: fixed; border-radius: 50%; filter: blur(80px); opacity: 0.15; animation: float 8s ease-in-out infinite; }
+        .orb1 { width: 400px; height: 400px; background: var(--cyan); top: -100px; left: -100px; }
+        .orb2 { width: 300px; height: 300px; background: var(--green); bottom: -50px; right: -50px; animation-delay: -4s; }
+        @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-30px); } }
+
+        .wrapper { position: relative; z-index: 1; width: 100%; max-width: 440px; padding: 20px; }
+
+        .logo-section { text-align: center; margin-bottom: 40px; }
+        .logo { font-family: 'Orbitron', sans-serif; font-size: 2.8rem; font-weight: 900; letter-spacing: 4px; background: linear-gradient(135deg, var(--cyan), var(--green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-sub { color: var(--muted); font-size: 0.75rem; letter-spacing: 6px; text-transform: uppercase; margin-top: 8px; }
 
         .card {
-            background: #1a1a2e;
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 20px;
-            border: 1px solid #2a2a4a;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 36px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 0 40px rgba(0,212,255,0.05), inset 0 1px 0 rgba(255,255,255,0.05);
         }
 
-        .card h2 {
-            color: #6c63ff;
-            margin-bottom: 15px;
-            font-size: 20px;
-        }
-
-        input, textarea {
-            width: 100%;
-            padding: 12px;
-            background: #0f0f1a;
-            border: 1px solid #2a2a4a;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 14px;
-            margin-bottom: 12px;
-        }
-
-        button {
-            background: #6c63ff;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            width: 100%;
-            margin-bottom: 10px;
-        }
-
-        button:hover { background: #5a52d5; }
-
-        .result {
-            margin-top: 15px;
-            padding: 12px;
-            border-radius: 8px;
-            background: #0f0f1a;
-            border: 1px solid #2a2a4a;
-            display: none;
-        }
-
-        .code-block {
-            background: #0d1117;
-            border-radius: 8px;
-            padding: 20px;
-            font-family: monospace;
-            font-size: 14px;
-            color: #f0f6fc;
-            margin: 15px 0;
-            border-left: 4px solid #ff6b6b;
-            white-space: pre-wrap;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
+        .tabs { display: flex; margin-bottom: 28px; border-bottom: 1px solid var(--border); gap: 4px; }
         .tab {
             padding: 10px 20px;
-            border-radius: 8px;
             cursor: pointer;
-            background: #1a1a2e;
-            border: 1px solid #2a2a4a;
-            color: #aaa;
+            color: var(--muted);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
         }
-
-        .tab.active {
-            background: #6c63ff;
-            color: white;
-            border-color: #6c63ff;
-        }
+        .tab:hover { color: var(--cyan); }
+        .tab.active { color: var(--cyan); border-bottom-color: var(--cyan); }
 
         .section { display: none; }
-        .section.active { display: block; }
+        .section.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-        .badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            margin: 4px;
+        .input-group { position: relative; margin-bottom: 16px; }
+        .input-label { font-size: 0.7rem; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; display: block; }
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0,212,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            outline: none;
         }
+        input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(0,212,255,0.1); }
+        input::placeholder { color: var(--muted); }
 
-        .easy { background: #1a472a; color: #69db7c; }
-        .medium { background: #7c4d00; color: #ffd43b; }
-        .hard { background: #4a1515; color: #ff6b6b; }
+        .btn {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, var(--cyan), #0088aa);
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 8px;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,212,255,0.3); }
+        .btn:active { transform: translateY(0); }
+
+        .message { margin-top: 14px; padding: 10px 14px; border-radius: 8px; font-size: 0.8rem; display: none; }
+        .success { background: rgba(0,255,136,0.1); border: 1px solid rgba(0,255,136,0.3); color: var(--green); }
+        .error { background: rgba(255,68,102,0.1); border: 1px solid rgba(255,68,102,0.3); color: var(--red); }
     </style>
 </head>
 <body>
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
 
-<nav>
-    <h1>⚔️ DevArena</h1>
-    <span id="welcomeMsg">Welcome, Developer!</span>
-</nav>
-
-<div class="container">
-
-    <!-- Tabs -->
-    <div class="tabs">
-        <div class="tab active" onclick="showSection('login')">🔑 Login</div>
-        <div class="tab" onclick="showSection('register')">📝 Register</div>
-        <div class="tab" onclick="showSection('bughunter')">🐛 Bug Hunter</div>
-        <div class="tab" onclick="showSection('portfolio')">💼 Portfolio Roaster</div>
-        <div class="tab" onclick="showSection('codeRisk')">🔮 Code Risk Analyzer</div>
-        <div class="tab" onclick="showSection('codebattle')">⚔️ Code Battle</div>
-    </div>
-
-    <!-- Login Section -->
-    <div class="section active" id="login">
-        <div class="card">
-            <h2>🔑 Login</h2>
-            <input type="text" id="loginUsername" placeholder="Username" />
-            <input type="password" id="loginPassword" placeholder="Password" />
-            <button onclick="login()">Login</button>
-            <div class="result" id="loginResult"></div>
+    <div class="wrapper">
+        <div class="logo-section">
+            <div class="logo">DEVARENA</div>
+            <div class="logo-sub">The Ultimate Developer Battleground</div>
         </div>
-    </div>
 
-    <!-- Register Section -->
-    <div class="section" id="register">
         <div class="card">
-            <h2>📝 Register</h2>
-            <input type="text" id="regUsername" placeholder="Username" />
-            <input type="email" id="regEmail" placeholder="Email" />
-            <input type="password" id="regPassword" placeholder="Password" />
-            <button onclick="register()">Register</button>
-            <div class="result" id="registerResult"></div>
-        </div>
-    </div>
+            <div class="tabs">
+                <div class="tab active" onclick="showTab('login', this)">LOGIN</div>
+                <div class="tab" onclick="showTab('register', this)">REGISTER</div>
+            </div>
 
-    <!-- Bug Hunter Section -->
-    <div class="section" id="bughunter">
-        <div class="card">
-            <h2>🐛 Bug Hunter</h2>
-            <p style="color:#aaa; margin-bottom:15px;">Find the bug in the code below!</p>
-            <button onclick="loadProblem()">🎲 Load Random Problem</button>
-
-            <div id="problemArea" style="display:none">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h3 id="problemTitle" style="color:#fff; margin:15px 0 5px;"></h3>
-                    <div>
-                        <span class="badge" id="difficultyBadge"></span>
-                        <span class="badge" style="background:#1a2a4a; color:#74c0fc" id="categoryBadge"></span>
-                    </div>
+            <div class="section active" id="login">
+                <div class="input-group">
+                    <label class="input-label">Username</label>
+                    <input type="text" id="loginUsername" placeholder="enter username..." />
                 </div>
-                <div class="code-block" id="buggyCodeDisplay"></div>
-                <input type="text" id="userAnswer" placeholder="Describe the bug you found..." />
-                <button onclick="submitAnswer()">✅ Submit Answer</button>
-                <button onclick="getHint()" style="background:#2a2a4a;">💡 Get Hint</button>
-                <div class="result" id="answerResult"></div>
+                <div class="input-group">
+                    <label class="input-label">Password</label>
+                    <input type="password" id="loginPassword" placeholder="enter password..." />
+                </div>
+                <button class="btn" onclick="login()">ENTER ARENA</button>
+                <div class="message" id="loginMessage"></div>
+            </div>
+
+            <div class="section" id="register">
+                <div class="input-group">
+                    <label class="input-label">Username</label>
+                    <input type="text" id="regUsername" placeholder="choose username..." />
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Email</label>
+                    <input type="email" id="regEmail" placeholder="your email..." />
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Password</label>
+                    <input type="password" id="regPassword" placeholder="create password..." />
+                </div>
+                <button class="btn" onclick="register()">CREATE ACCOUNT</button>
+                <div class="message" id="registerMessage"></div>
             </div>
         </div>
     </div>
 
-</div>
-<!-- Portfolio Roaster Section -->
-<div class="section" id="portfolio">
-    <div class="card">
-        <h2>💼 Portfolio Roaster</h2>
-        <p style="color:#aaa; margin-bottom:15px;">Enter your GitHub username and get brutally honest feedback!</p>
-        <input type="text" id="githubUsername" placeholder="Your GitHub username..." />
-        <button onclick="analyzePortfolio()">🔥 Roast My Portfolio</button>
-        <div id="portfolioResult" style="display:none">
-            <div style="text-align:center; margin:20px 0">
-                <img id="avatarImg" src="" style="width:80px; height:80px; border-radius:50%; border:3px solid #6c63ff"/>
-                <h3 id="profileName" style="margin:10px 0; color:#fff"></h3>
-                <div style="font-size:36px; font-weight:bold; color:#6c63ff" id="scoreDisplay"></div>
-                <div style="color:#aaa">out of 100</div>
-            </div>
-            <div id="roastsList"></div>
-            <div style="margin-top:15px">
-                <h4 style="color:#69db7c; margin-bottom:10px">✅ How to improve:</h4>
-                <div id="suggestionsList"></div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Code Risk Analyzer Section -->
-<div class="section" id="codeRisk">
-    <div class="card">
-        <h2>🔮 Code Risk Analyzer</h2>
-        <p style="color:#aaa; margin-bottom:15px;">Paste your code and AI will predict which edge cases will fail!</p>
-        <select id="codeLanguage" style="width:100%; padding:10px; margin-bottom:10px; background:#1e1e2e; color:white; border:1px solid #444; border-radius:8px;">
-            <option value="java">Java</option>
-            <option value="python">Python</option>
-            <option value="javascript">JavaScript</option>
-            <option value="c++">C++</option>
-            <option value="c">C</option>
-        </select>
-        <textarea id="codeInput" placeholder="Paste your code here..." style="width:100%; height:200px; padding:10px; background:#1e1e2e; color:white; border:1px solid #444; border-radius:8px; font-family:monospace;"></textarea>
-        <button onclick="analyzeCodeRisk()">🔮 Analyze Risks</button>
-        <div id="codeRiskResult" style="display:none; margin-top:15px;"></div>
-    </div>
-</div>
-<!-- Code Battle Section -->
-<div class="section" id="codebattle">
-    <div class="card">
-        <h2>⚔️ Code Battle</h2>
-        <p style="color:#aaa; margin-bottom:15px;">Challenge another developer to a real-time coding battle!</p>
-        
-        <div id="battleLobby">
-            <button onclick="joinBattle()">⚔️ Join Battle</button>
-            <div id="battleStatus" style="margin-top:15px; color:#aaa;"></div>
-        </div>
-
-        <div id="battleArena" style="display:none;">
-            <div style="background:#1e1e2e; padding:15px; border-radius:8px; margin-bottom:15px;">
-                <h3 id="problemTitle" style="color:#7c3aed;"></h3>
-                <p id="problemDescription" style="color:#e2e8f0;"></p>
-            </div>
-            <textarea id="battleCode" placeholder="Write your solution here..." 
-                style="width:100%; height:200px; padding:10px; background:#1e1e2e; color:white; border:1px solid #444; border-radius:8px; font-family:monospace;"></textarea>
-            <button onclick="submitBattle()" style="background:#10b981;">✅ Submit Solution</button>
-            <div id="battleResult" style="margin-top:15px;"></div>
-        </div>
-    </div>
-</div>
-
-<script>
-    let currentProblemId = null;
-    let loggedInUser = '';
-
-    function showSection(name) {
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.getElementById(name).classList.add('active');
-        event.target.classList.add('active');
-    }
-
-    async function login() {
-        const username = document.getElementById('loginUsername').value;
-        const password = document.getElementById('loginPassword').value;
-        const res = await fetch(`/api/users/login?username=${username}&password=${password}`, { method: 'POST' });
-        const text = await res.text();
-        showResult('loginResult', text);
-        if (text.includes('successful')) {
-            document.getElementById('welcomeMsg').textContent = `Welcome, ${username}! 🎉`;
-            loggedInUser = username;
+    <script>
+        function showTab(tab, el) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+            el.classList.add('active');
         }
-    }
 
-    async function register() {
-        const username = document.getElementById('regUsername').value;
-        const email = document.getElementById('regEmail').value;
-        const password = document.getElementById('regPassword').value;
-        const res = await fetch(`/api/users/register?username=${username}&email=${email}&password=${password}`, { method: 'POST' });
-        const text = await res.text();
-        showResult('registerResult', text);
-    }
-
-    async function loadProblem() {
-        const res = await fetch('/api/problems/all');
-        const problems = await res.json();
-        if (problems.length === 0) {
-            alert('No problems found!');
-            return;
-        }
-        const problem = problems[Math.floor(Math.random() * problems.length)];
-        currentProblemId = problem.id;
-        document.getElementById('problemTitle').textContent = problem.title;
-        document.getElementById('buggyCodeDisplay').textContent = problem.buggyCode;
-        document.getElementById('difficultyBadge').textContent = problem.difficulty;
-        document.getElementById('difficultyBadge').className = 'badge ' + problem.difficulty.toLowerCase();
-        document.getElementById('categoryBadge').textContent = problem.category;
-        document.getElementById('problemArea').style.display = 'block';
-        document.getElementById('answerResult').style.display = 'none';
-    }
-
-    async function submitAnswer() {
-    const answer = document.getElementById('userAnswer').value;
-    const res = await fetch(`/api/problems/check?problemId=${currentProblemId}&userAnswer=${encodeURIComponent(answer)}&username=${loggedInUser}`, { method: 'POST' });
-    const text = await res.text();
-    showResult('answerResult', text);
-    }
-
-    async function getHint() {
-        const res = await fetch(`/api/problems/${currentProblemId}`);
-        const problem = await res.json();
-        showResult('answerResult', '💡 Hint: ' + problem.hint);
-    }
-        async function analyzePortfolio() {
-        const username = document.getElementById('githubUsername').value;
-    if (!username) { alert('Enter a GitHub username!'); return; }
-    
-    const btn = document.querySelector('#portfolio button');
-    btn.textContent = '⏳ Analyzing...';
-    
-    const res = await fetch(`/api/portfolio/analyze/${username}`);
-    const data = await res.json();
-    
-    btn.textContent = '🔥 Roast My Portfolio';
-    
-    if (data.error) {
-        alert(data.error);
-        return;
-        }
-    
-        document.getElementById('avatarImg').src = data.avatar_url;
-         document.getElementById('profileName').textContent = data.name || username;
-        document.getElementById('scoreDisplay').textContent = data.score;
-    
-         // Roasts
-        const roastsList = document.getElementById('roastsList');
-        roastsList.innerHTML = '<h4 style="color:#ff6b6b; margin-bottom:10px">🔥 Roasts:</h4>';
-        data.roasts.forEach(roast => {
-            roastsList.innerHTML += `<div style="background:#1a0a0a; border:1px solid #ff6b6b; border-radius:8px; padding:10px; margin-bottom:8px; color:#ff6b6b">${roast}</div>`;
-        });
-    
-        // Suggestions
-        const suggestionsList = document.getElementById('suggestionsList');
-        suggestionsList.innerHTML = '';
-         data.suggestions.forEach(s => {
-            suggestionsList.innerHTML += `<div style="background:#0a1a0a; border:1px solid #69db7c; border-radius:8px; padding:10px; margin-bottom:8px; color:#69db7c">✅ ${s}</div>`;
-        });
-    
-        document.getElementById('portfolioResult').style.display = 'block';
-    }
-    async function analyzeCodeRisk() {
-    const code = document.getElementById('codeInput').value;
-    const language = document.getElementById('codeLanguage').value;
-    
-    if (!code) { alert('Please paste some code first!'); return; }
-    
-    const btn = document.querySelector('#codeRisk button');
-    btn.textContent = '⏳ Analyzing...';
-    btn.disabled = true;
-
-    const res = await fetch(`/api/coderisk/analyze?code=${encodeURIComponent(code)}&language=${language}`, {
-    method: 'POST'
-        });
-    const data = await res.json();
-    
-    const resultDiv = document.getElementById('codeRiskResult');
-    resultDiv.style.display = 'block';
-    
-    // Extract text from Claude API response
-    const text = data.candidates[0].content.parts[0].text;
-    resultDiv.innerHTML = `<div style="background:#1e1e2e; padding:15px; border-radius:8px; border-left:4px solid #f59e0b;">
-        <h3 style="color:#f59e0b;">⚠️ Risk Analysis:</h3>
-        <pre style="color:#e2e8f0; white-space:pre-wrap;">${text}</pre>
-    </div>`;
-    
-    btn.textContent = '🔮 Analyze Risks';
-    btn.disabled = false;
-}
-    let currentBattleId = null;
-let battlePolling = null;
-
-async function joinBattle() {
-    if (!loggedInUser) { alert('Please login first!'); return; }
-    
-    const btn = document.querySelector('#battleLobby button');
-    btn.textContent = '⏳ Finding opponent...';
-    btn.disabled = true;
-
-    const res = await fetch(`/api/battle/join?username=${loggedInUser}`, { method: 'POST' });
-    const battle = await res.json();
-    currentBattleId = battle.id;
-
-    if (battle.status === 'WAITING') {
-        document.getElementById('battleStatus').innerHTML = '⏳ Waiting for opponent to join...';
-        // Poll every 2 seconds to check if opponent joined
-        battlePolling = setInterval(async () => {
-            const res = await fetch(`/api/battle/status/${currentBattleId}`);
-            const updated = await res.json();
-            if (updated.status === 'ACTIVE') {
-                clearInterval(battlePolling);
-                startBattle(updated);
-            }
-        }, 2000);
-    } else if (battle.status === 'ACTIVE') {
-        startBattle(battle);
-    }
-}
-
-function startBattle(battle) {
-    document.getElementById('battleLobby').style.display = 'none';
-    document.getElementById('battleArena').style.display = 'block';
-    document.getElementById('problemTitle').textContent = battle.problemTitle;
-    document.getElementById('problemDescription').textContent = battle.problemDescription;
-
-    // Poll for winner
-    battlePolling = setInterval(async () => {
-        const res = await fetch(`/api/battle/status/${currentBattleId}`);
-        const updated = await res.json();
-        if (updated.status === 'FINISHED') {
-            clearInterval(battlePolling);
-            const resultDiv = document.getElementById('battleResult');
-            if (updated.winner === loggedInUser) {
-                resultDiv.innerHTML = '<h3 style="color:#10b981;">🏆 You Won!</h3>';
+        async function login() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            if (!username || !password) { showMessage('loginMessage', '⚠ Fill all fields!', false); return; }
+            const res = await fetch(`/api/users/login?username=${username}&password=${password}`, { method: 'POST' });
+            const data = await res.text();
+            if (data.includes('successful')) {
+                localStorage.setItem('loggedInUser', username);
+                window.location.href = '/dashboard.html';
             } else {
-                resultDiv.innerHTML = `<h3 style="color:#ef4444;">😔 ${updated.winner} won this round!</h3>`;
+                showMessage('loginMessage', '✗ ' + data, false);
             }
         }
-    }, 2000);
-}
 
-async function submitBattle() {
-    if (!currentBattleId) return;
-    const res = await fetch(`/api/battle/submit/${currentBattleId}?username=${loggedInUser}`, { method: 'POST' });
-    const battle = await res.json();
-    if (battle.winner === loggedInUser) {
-        document.getElementById('battleResult').innerHTML = '<h3 style="color:#10b981;">🏆 You Won!</h3>';
-    }
-}
-    function showResult(id, text) {
-        const el = document.getElementById(id);
-        el.textContent = text;
-        el.style.display = 'block';
-    }
-</script>
+        async function register() {
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            if (!username || !email || !password) { showMessage('registerMessage', '⚠ Fill all fields!', false); return; }
+            const res = await fetch(`/api/users/register?username=${username}&email=${email}&password=${password}`, { method: 'POST' });
+            const data = await res.text();
+            showMessage('registerMessage', data, data.includes('successful'));
+        }
 
+        function showMessage(id, msg, success) {
+            const el = document.getElementById(id);
+            el.textContent = msg;
+            el.className = 'message ' + (success ? 'success' : 'error');
+            el.style.display = 'block';
+        }
+    </script>
 </body>
 </html>

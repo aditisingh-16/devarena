@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevArena - Code Battle</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #080c14;
+            --card: rgba(255,255,255,0.03);
+            --border: rgba(255,68,102,0.2);
+            --red: #ff4466;
+            --cyan: #00d4ff;
+            --green: #00ff88;
+            --text: #e2e8f0;
+            --muted: #4a5568;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; min-height: 100vh; }
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background-image: linear-gradient(rgba(255,68,102,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,68,102,0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+        }
+        .orb { position: fixed; border-radius: 50%; filter: blur(100px); opacity: 0.08; pointer-events: none; }
+        .orb1 { width: 400px; height: 400px; background: var(--red); top: -100px; right: -100px; }
+        .orb2 { width: 300px; height: 300px; background: var(--cyan); bottom: -100px; left: -100px; }
+
+        .navbar { position: relative; z-index: 10; background: rgba(8,12,20,0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 16px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'Orbitron', sans-serif; font-size: 1.4rem; font-weight: 900; letter-spacing: 3px; background: linear-gradient(135deg, var(--cyan), var(--green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; cursor: pointer; }
+        .back-btn { padding: 7px 16px; background: transparent; border: 1px solid var(--border); color: var(--red); border-radius: 6px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 0.65rem; letter-spacing: 2px; transition: all 0.3s; }
+        .back-btn:hover { background: var(--red); color: #fff; }
+
+        .container { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 50px 20px; }
+        .page-header { margin-bottom: 36px; }
+        .page-tag { font-size: 0.65rem; letter-spacing: 4px; color: var(--red); text-transform: uppercase; margin-bottom: 10px; }
+        .page-title { font-family: 'Orbitron', sans-serif; font-size: 2rem; font-weight: 900; }
+        .page-sub { color: var(--muted); font-size: 0.8rem; margin-top: 8px; }
+
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; backdrop-filter: blur(10px); }
+
+        /* Lobby */
+        .lobby-content { text-align: center; padding: 20px 0; }
+        .lobby-icon { font-size: 4rem; margin-bottom: 20px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .lobby-title { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; margin-bottom: 12px; }
+        .lobby-desc { color: var(--muted); font-size: 0.82rem; margin-bottom: 30px; line-height: 1.7; }
+        .btn-battle { padding: 14px 40px; background: linear-gradient(135deg, var(--red), #aa0022); border: none; border-radius: 8px; color: #fff; font-family: 'Orbitron', sans-serif; font-size: 0.85rem; font-weight: 700; letter-spacing: 3px; cursor: pointer; transition: all 0.3s; }
+        .btn-battle:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(255,68,102,0.4); }
+
+        /* Waiting */
+        .waiting-content { text-align: center; padding: 40px 0; }
+        .waiting-icon { font-size: 3rem; margin-bottom: 20px; }
+        .scanning { display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--red); font-size: 0.8rem; letter-spacing: 3px; margin-top: 16px; }
+        .dot { width: 6px; height: 6px; background: var(--red); border-radius: 50%; animation: blink 1.4s infinite; }
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes blink { 0%,100% { opacity: 0.2; } 50% { opacity: 1; } }
+
+        /* Arena */
+        .problem-box { background: #0a0e1a; border: 1px solid var(--border); border-left: 4px solid var(--red); border-radius: 10px; padding: 24px; margin-bottom: 24px; }
+        .problem-label { font-size: 0.65rem; letter-spacing: 3px; color: var(--red); text-transform: uppercase; margin-bottom: 10px; }
+        .problem-title { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; margin-bottom: 12px; }
+        .problem-desc { color: #c9d1d9; font-size: 0.85rem; line-height: 1.8; }
+        textarea { width: 100%; height: 220px; padding: 16px; background: #0a0e1a; border: 1px solid var(--border); border-radius: 8px; color: #a8ff78; font-family: 'JetBrains Mono', monospace; font-size: 0.88rem; outline: none; resize: vertical; margin-bottom: 16px; line-height: 1.7; }
+        textarea:focus { border-color: var(--red); }
+        .btn-submit { width: 100%; padding: 13px; background: linear-gradient(135deg, var(--green), #00aa55); border: none; border-radius: 8px; color: #000; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; font-weight: 700; letter-spacing: 3px; cursor: pointer; transition: all 0.3s; }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,255,136,0.3); }
+
+        .win-banner { background: rgba(0,255,136,0.08); border: 1px solid rgba(0,255,136,0.3); border-radius: 12px; padding: 30px; text-align: center; margin-top: 20px; animation: fadeIn 0.5s ease; }
+        .lose-banner { background: rgba(255,68,102,0.08); border: 1px solid rgba(255,68,102,0.3); border-radius: 12px; padding: 30px; text-align: center; margin-top: 20px; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .banner-icon { font-size: 3rem; margin-bottom: 12px; }
+        .banner-title { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 900; }
+        .win-banner .banner-title { color: var(--green); }
+        .lose-banner .banner-title { color: var(--red); }
+    </style>
+</head>
+<body>
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+
+    <nav class="navbar">
+        <div class="logo" onclick="window.location.href='/dashboard.html'">DEVARENA</div>
+        <button class="back-btn" onclick="window.location.href='/dashboard.html'">← BACK</button>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <div class="page-tag">// Module 04</div>
+            <div class="page-title">⚔️ CODE BATTLE</div>
+            <div class="page-sub">Real-time 1v1 coding battles. First to solve wins.</div>
+        </div>
+
+        <div class="card">
+            <!-- Lobby -->
+            <div id="battleLobby">
+                <div class="lobby-content">
+                    <div class="lobby-icon">⚔️</div>
+                    <div class="lobby-title">READY TO BATTLE?</div>
+                    <div class="lobby-desc">Click below to find an opponent.<br/>You'll both get the same problem. First to submit wins!</div>
+                    <button class="btn-battle" onclick="joinBattle()">FIND OPPONENT</button>
+                </div>
+            </div>
+
+            <!-- Waiting -->
+            <div id="battleWaiting" style="display:none;">
+                <div class="waiting-content">
+                    <div class="waiting-icon">📡</div>
+                    <div style="font-family:'Orbitron',sans-serif; font-size:1rem; margin-bottom:10px;">SCANNING FOR OPPONENTS</div>
+                    <div style="color:var(--muted); font-size:0.8rem;">Share this page with a friend to battle!</div>
+                    <div class="scanning">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        SEARCHING
+                    </div>
+                </div>
+            </div>
+
+            <!-- Arena -->
+            <div id="battleArena" style="display:none;">
+                <div class="problem-box">
+                    <div class="problem-label">// Your Challenge</div>
+                    <div class="problem-title" id="problemTitle"></div>
+                    <div class="problem-desc" id="problemDescription"></div>
+                </div>
+                <textarea id="battleCode" placeholder="// write your solution here..."></textarea>
+                <button class="btn-submit" onclick="submitBattle()">✓ SUBMIT SOLUTION</button>
+                <div id="battleResult"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        if (!loggedInUser) window.location.href = '/index.html';
+
+        let currentBattleId = null;
+        let battlePolling = null;
+
+        async function joinBattle() {
+            const btn = document.querySelector('.btn-battle');
+            btn.textContent = 'CONNECTING...';
+            btn.disabled = true;
+            const res = await fetch(`/api/battle/join?username=${loggedInUser}`, { method: 'POST' });
+            const battle = await res.json();
+            currentBattleId = battle.id;
+            if (battle.status === 'WAITING') {
+                document.getElementById('battleLobby').style.display = 'none';
+                document.getElementById('battleWaiting').style.display = 'block';
+                battlePolling = setInterval(async () => {
+                    const r = await fetch(`/api/battle/status/${currentBattleId}`);
+                    const updated = await r.json();
+                    if (updated.status === 'ACTIVE') { clearInterval(battlePolling); startBattle(updated); }
+                }, 2000);
+            } else if (battle.status === 'ACTIVE') {
+                startBattle(battle);
+            }
+        }
+
+        function startBattle(battle) {
+            document.getElementById('battleLobby').style.display = 'none';
+            document.getElementById('battleWaiting').style.display = 'none';
+            document.getElementById('battleArena').style.display = 'block';
+            document.getElementById('problemTitle').textContent = battle.problemTitle;
+            document.getElementById('problemDescription').textContent = battle.problemDescription;
+            battlePolling = setInterval(async () => {
+                const r = await fetch(`/api/battle/status/${currentBattleId}`);
+                const updated = await r.json();
+                if (updated.status === 'FINISHED') {
+                    clearInterval(battlePolling);
+                    const resultDiv = document.getElementById('battleResult');
+                    if (updated.winner === loggedInUser) {
+                        resultDiv.innerHTML = `<div class="win-banner"><div class="banner-icon">🏆</div><div class="banner-title">YOU WON!</div></div>`;
+                    } else {
+                        resultDiv.innerHTML = `<div class="lose-banner"><div class="banner-icon">💀</div><div class="banner-title">${updated.winner} WON</div></div>`;
+                    }
+                }
+            }, 2000);
+        }
+
+        async function submitBattle() {
+            if (!currentBattleId) return;
+            const res = await fetch(`/api/battle/submit/${currentBattleId}?username=${loggedInUser}`, { method: 'POST' });
+            const battle = await res.json();
+            if (battle.winner === loggedInUser) {
+                document.getElementById('battleResult').innerHTML = `<div class="win-banner"><div class="banner-icon">🏆</div><div class="banner-title">YOU WON!</div></div>`;
+            }
+        }
+    </script>
+</body>
+</html>

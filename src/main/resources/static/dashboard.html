@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevArena - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #080c14;
+            --card: rgba(255,255,255,0.03);
+            --border: rgba(0,212,255,0.2);
+            --cyan: #00d4ff;
+            --green: #00ff88;
+            --red: #ff4466;
+            --orange: #ff8c00;
+            --purple: #9d4edd;
+            --text: #e2e8f0;
+            --muted: #4a5568;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; min-height: 100vh; }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+        }
+        .orb { position: fixed; border-radius: 50%; filter: blur(100px); opacity: 0.1; pointer-events: none; }
+        .orb1 { width: 500px; height: 500px; background: var(--cyan); top: -200px; right: -100px; }
+        .orb2 { width: 400px; height: 400px; background: var(--purple); bottom: -100px; left: -100px; }
+
+        .navbar {
+            position: relative; z-index: 10;
+            background: rgba(8,12,20,0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .logo { font-family: 'Orbitron', sans-serif; font-size: 1.4rem; font-weight: 900; letter-spacing: 3px; background: linear-gradient(135deg, var(--cyan), var(--green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .nav-right { display: flex; align-items: center; gap: 16px; }
+        .username { font-size: 0.75rem; letter-spacing: 2px; color: var(--cyan); }
+        .logout-btn { padding: 7px 16px; background: transparent; border: 1px solid var(--red); color: var(--red); border-radius: 6px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 0.65rem; letter-spacing: 2px; transition: all 0.3s; }
+        .logout-btn:hover { background: var(--red); color: #000; }
+
+        .container { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 60px 20px; }
+        .hero { margin-bottom: 60px; }
+        .hero-greeting { font-size: 0.75rem; letter-spacing: 4px; color: var(--cyan); text-transform: uppercase; margin-bottom: 12px; }
+        .hero-title { font-family: 'Orbitron', sans-serif; font-size: 2.5rem; font-weight: 900; line-height: 1.2; margin-bottom: 12px; }
+        .hero-title span { background: linear-gradient(135deg, var(--cyan), var(--green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero-sub { color: var(--muted); font-size: 0.85rem; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+
+        .module-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px 28px;
+            cursor: pointer;
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        .module-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--accent-color, var(--cyan)), transparent);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        .module-card:hover { transform: translateY(-8px); border-color: var(--accent-color, var(--cyan)); box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 30px rgba(0,212,255,0.1); }
+        .module-card:hover::before { opacity: 0.05; }
+
+        .card-icon { font-size: 2.5rem; margin-bottom: 20px; display: block; }
+        .card-tag { font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px; color: var(--accent-color, var(--cyan)); }
+        .card-title { font-family: 'Orbitron', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 12px; letter-spacing: 1px; }
+        .card-desc { color: var(--muted); font-size: 0.78rem; line-height: 1.7; }
+        .card-arrow { position: absolute; bottom: 24px; right: 24px; color: var(--accent-color, var(--cyan)); font-size: 1.2rem; opacity: 0; transition: all 0.3s; transform: translateX(-8px); }
+        .module-card:hover .card-arrow { opacity: 1; transform: translateX(0); }
+
+        .card-bug { --accent-color: #00ff88; }
+        .card-portfolio { --accent-color: #ff8c00; }
+        .card-risk { --accent-color: #9d4edd; }
+        .card-battle { --accent-color: #ff4466; }
+    </style>
+</head>
+<body>
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+
+    <nav class="navbar">
+        <div class="logo">DEVARENA</div>
+        <div class="nav-right">
+            <div class="username">[ <span id="usernameDisplay"></span> ]</div>
+            <button class="logout-btn" onclick="logout()">LOGOUT</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="hero">
+            <div class="hero-greeting">// Welcome back, developer</div>
+            <div class="hero-title">Choose Your <span>Challenge</span></div>
+            <div class="hero-sub">Level up your skills. Compete. Grow.</div>
+        </div>
+
+        <div class="grid">
+            <div class="module-card card-bug" onclick="goto('bughunter.html')">
+                <span class="card-icon">🐛</span>
+                <div class="card-tag">Module 01</div>
+                <div class="card-title">BUG HUNTER</div>
+                <div class="card-desc">Find bugs in broken code. Train your debugging skills and track your weak spots over time.</div>
+                <div class="card-arrow">→</div>
+            </div>
+
+            <div class="module-card card-portfolio" onclick="goto('portfolio.html')">
+                <span class="card-icon">💼</span>
+                <div class="card-tag">Module 02</div>
+                <div class="card-title">PORTFOLIO ROASTER</div>
+                <div class="card-desc">Get brutally honest AI feedback on your GitHub profile. Know exactly what to fix.</div>
+                <div class="card-arrow">→</div>
+            </div>
+
+            <div class="module-card card-risk" onclick="goto('coderisk.html')">
+                <span class="card-icon">🔮</span>
+                <div class="card-tag">Module 03</div>
+                <div class="card-title">CODE RISK ANALYZER</div>
+                <div class="card-desc">AI predicts which edge cases in your code will fail before you submit. Never get surprised.</div>
+                <div class="card-arrow">→</div>
+            </div>
+
+            <div class="module-card card-battle" onclick="goto('battle.html')">
+                <span class="card-icon">⚔️</span>
+                <div class="card-tag">Module 04</div>
+                <div class="card-title">CODE BATTLE</div>
+                <div class="card-desc">Challenge another developer to a real-time 1v1 coding battle. First to solve wins glory.</div>
+                <div class="card-arrow">→</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        if (!loggedInUser) window.location.href = '/index.html';
+        document.getElementById('usernameDisplay').textContent = loggedInUser;
+        function goto(page) { window.location.href = '/' + page; }
+        function logout() { localStorage.removeItem('loggedInUser'); window.location.href = '/index.html'; }
+    </script>
+</body>
+</html>
